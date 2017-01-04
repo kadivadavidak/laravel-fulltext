@@ -33,7 +33,7 @@ class Search implements SearchInterface
         $termsMatch = ''.$terms->implode(' ');
         $termsBool = '+'.$terms->implode(' +');
 
-        $query = \Swis\LaravelFulltext\IndexedRecord::query()
+        $query = config('laravel-fulltext.indexed_record_model')::query()
           ->whereRaw('MATCH (indexed_title, indexed_content) AGAINST (? IN BOOLEAN MODE)', [$termsBool])
           ->orderByRaw(
             '(' . (float) config('laravel-fulltext.weight.title', 1.5)   . ' * (MATCH (indexed_title) AGAINST (?)) +

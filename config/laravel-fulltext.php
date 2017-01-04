@@ -13,4 +13,6 @@ return [
    *  Enable wildcard after words
    */
   'enable_wildcards' => false,
+
+  'indexed_record_model' => \Swis\LaravelFulltext\IndexedRecord::class
 ];
