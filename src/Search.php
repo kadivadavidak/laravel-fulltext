@@ -33,16 +33,16 @@ class Search implements SearchInterface
         $termsMatch = ''.$terms->implode(' ');
         $termsBool = '+'.$terms->implode(' +');
 
-        $query = config('laravel-fulltext.indexed_record_model')::query()
-          ->whereRaw('MATCH (indexed_title, indexed_content) AGAINST (? IN BOOLEAN MODE)', [$termsBool])
+        $pdo = \Swis\LaravelFulltext\IndexedRecord::getConnectionResolver()->connection()->getPdo();
+        $query = \Swis\LaravelFulltext\IndexedRecord::query()
+          ->whereRaw('MATCH (indexed_title, indexed_content) AGAINST (' . $pdo->quote($termsBool) . ' IN BOOLEAN MODE)')
           ->orderByRaw(
-            '(' . (float) config('laravel-fulltext.weight.title', 1.5)   . ' * (MATCH (indexed_title) AGAINST (?)) +
-              ' . (float) config('laravel-fulltext.weight.content', 1.0) . ' * (MATCH (indexed_title, indexed_content) AGAINST (?))
-             ) DESC',
-            [$termsMatch, $termsMatch]
-          )
+            '(' . (float) config('laravel-fulltext.weight.title', 1.5)   . ' * (MATCH (indexed_title) AGAINST (' . $pdo->quote($termsMatch) . ')) +
+              ' . (float) config('laravel-fulltext.weight.content', 1.0) . ' * (MATCH (indexed_title, indexed_content) AGAINST (' . $pdo->quote($termsMatch) . '))
+             ) DESC')
           ->limit(config('laravel-fulltext.limit-results'))
           ->with('indexable');
+
         return $query;
     }
 }
