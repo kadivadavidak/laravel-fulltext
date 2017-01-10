@@ -7,7 +7,7 @@ class TermBuilder {
         $wildcards = config('laravel-fulltext.enable_wildcards');
         $search = str_replace(array('-', '.', '+', '<', '>', '(', ')', '*'), '', $search);
 
-        $terms = collect(preg_split('/[\s,]+/', $search));
+        $terms = collect(preg_split('/[\s,]+/', trim($search)));
 
         if($wildcards === true){
             $terms->each(function($part){
